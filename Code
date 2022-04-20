@@ -1,0 +1,151 @@
+#Hannah Neymeyer
+#Prof. Locklair
+#csc 350
+#BEST & WORST FIT MEMORY ALLOCATION
+
+from random import randint
+def emptySlot(n):
+    b = n * 2
+    neg = n - b
+    return neg
+
+class physicalMem:
+    def __init__(self, size):
+        self.size = size
+        self.arr = [' '] * size
+        self.arr[0] = emptySlot(size)
+        self.allocated = []
+        self.numOfHoles = [2]
+        self.memoryUtilization = []
+
+    def avgMemUtilization(self, requests):
+        # average memory utilization by adding memory used/number of requests
+        aver = 0
+        for z in range(len(self.memoryUtilization)):
+            aver = self.memoryUtilization[z] / self.size + aver
+        aver = aver / requests
+        print("AVG Memory Utilization : " + str(aver))
+
+    def avgSTime(self, requests):
+        aver = 0
+        for z in range(len(self.numOfHoles)):
+            aver = self.numOfHoles[z] + aver
+        print("AVG Search Time: " + str(aver))
+
+    def demand(self, requests, fitType):
+        #allocate vs. deallocate randomly
+        total = 0
+        finishedRequests = 0
+        for z in range(requests):
+            finishedRequests += 1
+            #random int set as number
+            num = randint
+            if num == 1 and self.allocated != []:
+                # allocated block becomes deallocated by making it a negative number
+                block = randint(0, len(self.allocated) - 1)
+                self.deallocate(block)
+            #other option is to allocate a block
+            else:
+                #each request must be inbetween 1 and 8 blocks
+                allocateNumber = randint(1, 8)
+                if fitType == "best fit":
+                    allocationindex = self.bestFitAllocation(allocateNumber)
+                else:
+                    allocationindex = self.worstFitAllocation(allocateNumber)
+
+                if allocationindex == -1:
+                    # end program because no memory
+                    print("Not allocated: " + str(self.arr))
+                    self.avgSTime(finishedRequests)
+                    self.avgMemUtilization(finishedRequests)
+                    return 0
+                else:
+                    total = total + allocateNumber
+                    self.memoryUtilization.append(total)
+                   
+                    print(str(allocateNumber) + str(self.arr))
+                    self.allocated.append(allocationindex)
+
+    def worstFitAllocation(self, blockSize):
+        fit = 0
+        fitcount = -1
+
+        # Find largest hole for memory block
+        for z in range(len(self.arr)):
+            if self.arr[z] != ' ':
+                    size = abs(self.arr[z])
+                    if size >= blockSize:
+                        if fitcount == -1 or fit < size:
+                            fitcount = z
+                            fit = size
+        # ends the program if the block can not be allocated
+        if fitcount == -1:
+            print("Program has been ended due to failed request.")
+            return fitcount
+        else:
+            self.allocate(fitcount, blockSize)
+            return fitcount
+
+    def bestFitAllocation(self, blockSize):
+        fit = 0
+        fitcount = -1
+
+        # counts how many holes were used for the average search time
+        count = 0
+
+        # goes through the memory array to find the smallest hole to put the memory block
+        for z in range(len(self.arr)):
+            if self.arr[z] != ' ':
+                if self.arr[z] < 0:
+                    size = abs(self.arr[z])
+                    if size >= blockSize:
+                        count += 1
+                        # find matching block
+                        if fit == size:
+                            fit = size
+                            break
+                        elif fitcount == -1 or fit > size:
+                            fitcount = z
+                            fit = size
+        # ends the program if unable to allocate block 
+        if fitcount == -1:
+            print("Program has been ended due to unability to allocate block.")
+            return fitcount
+        else:
+            self.allocate(fitcount, blockSize)
+            return fitcount
+
+    def allocate(self, index, blockSize):
+        self.arr[index] = blockSize
+
+        b = index + blockSize
+        a = b
+        count = 0
+        if a < len(self.arr):
+                if b != len(self.arr) - 1 and self.arr[b] == ' ':
+                    while self.arr[b] == ' ' and b < len(self.arr) - 1:
+                        count += 1
+                        b += 1
+                    if b == len(self.arr) - 1:
+                        count += 1
+                    self.arr[a] = emptySlot(count)
+#0 is usedm 1 is free, and 2 is a fit
+def typeID(self):
+		if self.type == "used":
+			       return 0
+		if self.type == "free":
+			       return -1
+			       if self.type == "fit":
+			           return 2
+			           return 0
+    
+#entering physcial memory of 64 "blocks"
+c = physicalMem(64)
+d = physicalMem(64)
+
+print("Best Fit Allocation ")
+#run for 50 steps of allocation and deallocation
+c.demand(50, "best fit")
+print("\n Worst Fit Allocation")
+#run for 50  steps of allocation and deallocation
+d.demand(50, "worst")
